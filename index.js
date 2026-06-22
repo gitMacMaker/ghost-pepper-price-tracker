@@ -66,7 +66,7 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
 }
 
 async function scrapeShecklesPrice(page) {
-  console.log("\nSearching for: Sheckles (100M)");
+  console.log("\nSearching for: Sheckles");
   await page.goto(
     "https://www.eldorado.gg/grow-a-garden-2-sheckles/g/430?offerSortingCriterion=LowestMinQty",
     { waitUntil: "networkidle2", timeout: 60000 }
@@ -97,7 +97,6 @@ async function scrapeShecklesPrice(page) {
       }
     }
 
-    // Filter: min qty <= 100M AND stock >= 100M, then find cheapest
     const eligible = sellers
       .filter(s => s.minQty <= 100 && s.stock >= 100)
       .sort((a, b) => a.price - b.price);
@@ -106,9 +105,8 @@ async function scrapeShecklesPrice(page) {
   });
 
   if (cheapest) {
-    // Price for 100M
-   console.log(`✅ Sheckles: $${cheapest.price}/M`);
-return cheapest.price;
+    console.log(`✅ Sheckles: $${cheapest.price}/M`);
+    return cheapest.price;
   }
 
   console.log("❌ Sheckles: no eligible sellers found");
@@ -124,18 +122,24 @@ async function setupSheet(sheets) {
     requestBody: { values: headers },
   });
 
-  // Seeds in rows 2-10, Sheckles in row 11
-  const seedNames = [...SEEDS.map(s => [s.name]), ["Sheckles (100M)"]];
+  const allRows = [...SEEDS.map(s => [s.name]), ["Sheckles (per M)"]];
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${SHEET_NAME}!A2:A${seedNames.length + 1}`,
+    range: `${SHEET_NAME}!A2:A${allRows.length + 1}`,
     valueInputOption: "USER_ENTERED",
-    requestBody: { values: seedNames },
+    requestBody: { values: allRows },
   });
 
-  const formulas = seedNames.map((s, i) => {
+  const formulas = allRows.map((s, i) => {
     const row = i + 2;
     const seedName = s[0];
+
+    if (seedName === "Sheckles (per M)") {
+      return [
+        `=IF(B${row}="","",CEILING(MAX(B${row},0.005)*1.5,0.01))`,
+        `=IF(B${row}="","",C${row}-B${row})`
+      ];
+    }
 
     if (seedName === "Bamboo Seed" || seedName === "Mushroom Seed") {
       return [
@@ -152,7 +156,7 @@ async function setupSheet(sheets) {
 
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${SHEET_NAME}!C2:D${seedNames.length + 1}`,
+    range: `${SHEET_NAME}!C2:D${allRows.length + 1}`,
     valueInputOption: "USER_ENTERED",
     requestBody: { values: formulas },
   });
@@ -206,7 +210,6 @@ async function run() {
       results.push(price);
     }
 
-    // Scrape Sheckles
     const shecklesPrice = await scrapeShecklesPrice(page);
     results.push(shecklesPrice);
 
