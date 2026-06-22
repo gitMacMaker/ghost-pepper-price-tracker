@@ -84,11 +84,21 @@ async function setupSheet(sheets) {
 
   const formulas = SEEDS.map((_, i) => {
     const row = i + 2;
+    const seedName = SEEDS[i].name;
+
+    if (seedName === "Bamboo Seed" || seedName === "Mushroom Seed") {
+      return [
+        `=IF(B${row}="","",IF(B${row}<0.03,0.05,CEILING(MAX(B${row},0.05)*1.5,0.1)))`,
+        `=IF(B${row}="","",C${row}-B${row})`
+      ];
+    }
+
     return [
       `=IF(B${row}="","",CEILING(MAX(B${row},0.05)*1.5,0.1))`,
       `=IF(B${row}="","",C${row}-B${row})`
     ];
   });
+
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
     range: `${SHEET_NAME}!C2:D${SEEDS.length + 1}`,
@@ -138,7 +148,7 @@ async function run() {
       console.log(`\nSearching for: ${seed.name}`);
       const price = await scrapeCheapestPrice(page, seed.name, seed.search, seed.exclude);
       if (price) {
-        console.log(`✅ ${seed.name}: $${price.toFixed(2)} → your price: $${(Math.ceil(Math.max(price, 0.05) * 1.5 * 10) / 10).toFixed(2)}`);
+        console.log(`✅ ${seed.name}: $${price.toFixed(2)}`);
       } else {
         console.log(`❌ ${seed.name}: no listings found`);
       }
