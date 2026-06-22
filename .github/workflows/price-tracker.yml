@@ -2,7 +2,7 @@ name: Ghost Pepper Price Tracker
 
 on:
   schedule:
-    - cron: '0, 30 * * * *'  # Every hour
+    - cron: '0,30 * * * *'  # Every hour
   workflow_dispatch:       # Also allows manual runs
 
 jobs:
