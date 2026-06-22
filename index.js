@@ -3,6 +3,7 @@ const { google } = require("googleapis");
 
 const SPREADSHEET_ID = "1124M88x32AuUN9TzmE_dr4ot6Rnt1Gu62VYPnBHXgxE";
 const SHEET_NAME = "Tracker";
+const MIN_PRICE = 0.05;
 
 const SEEDS = [
   { name: "Ghost Pepper Seed",    search: "Ghost Pepper Seed",    exclude: ["super ghost", "robux", "roll"] },
@@ -58,7 +59,9 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
     console.log(`  [${seedName}] Page ${pageIndex}: ${filtered.length} matching listings`);
 
     if (filtered.length > 0) {
-      return Math.min(...filtered.map(r => r.price));
+      const cheapest = Math.min(...filtered.map(r => r.price));
+      // Apply minimum price floor
+      return Math.max(cheapest, MIN_PRICE);
     }
   }
 
