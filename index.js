@@ -5,15 +5,15 @@ const SPREADSHEET_ID = "1124M88x32AuUN9TzmE_dr4ot6Rnt1Gu62VYPnBHXgxE";
 const SHEET_NAME = "Tracker";
 
 const SEEDS = [
-  { name: "Ghost Pepper Seed",    search: "Ghost Pepper Seed",    exclude: ["super ghost", "robux", "roll"] },
-  { name: "Dragon Breath Seed",   search: "Dragon Breath Seed",   exclude: ["robux", "roll"] },
-  { name: "Moon Bloom Seed",      search: "Moon Bloom Seed",      exclude: ["robux", "roll"] },
-  { name: "Venom Spitter Seed",   search: "Venom Spitter Seed",   exclude: ["robux", "roll"] },
-  { name: "Poison Apple Seed",    search: "Poison Apple Seed",    exclude: ["robux", "roll"] },
-  { name: "Venus Fly Trap Seed",  search: "Venus Fly Trap Seed",  exclude: ["robux", "roll"] },
-  { name: "Bamboo Seed",          search: "Bamboo Seed",          exclude: ["robux", "roll", "btc"] },
-  { name: "Mushroom Seed",        search: "Mushroom Seed",        exclude: ["robux", "roll"] },
-  { name: "Pomegranate Seed",     search: "Pomegranate Seed",     exclude: ["robux", "roll"] },
+  { name: "Ghost Pepper Seed",    search: "Ghost Pepper Seed",    exclude: ["super ghost", "robux", "roll", "fruit"] },
+  { name: "Dragon Breath Seed",   search: "Dragon Breath Seed",   exclude: ["robux", "roll", "fruit", "breathe"] },
+  { name: "Moon Bloom Seed",      search: "Moon Bloom Seed",      exclude: ["robux", "roll", "fruit"] },
+  { name: "Venom Spitter Seed",   search: "Venom Spitter Seed",   exclude: ["robux", "roll", "fruit"] },
+  { name: "Poison Apple Seed",    search: "Poison Apple Seed",    exclude: ["robux", "roll", "fruit"] },
+  { name: "Venus Fly Trap Seed",  search: "Venus Fly Trap Seed",  exclude: ["robux", "roll", "fruit"] },
+  { name: "Bamboo Seed",          search: "Bamboo Seed",          exclude: ["robux", "roll", "btc", "fruit"] },
+  { name: "Mushroom Seed",        search: "Mushroom Seed",        exclude: ["robux", "roll", "fruit"] },
+  { name: "Pomegranate Seed",     search: "Pomegranate Seed",     exclude: ["robux", "roll", "fruit"] },
 ];
 
 async function getSheetClient() {
@@ -36,20 +36,20 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
     const results = await page.evaluate(() => {
       const cards = [...document.querySelectorAll('a[href*="/oi/"]')];
       return cards.map(card => {
-        const text = card.textContent.replace(/\s+/g, ' ').trim();
-        const priceMatch = text.match(/\$([\d]+(?:\.\d{1,2})?)/);
+        const titleEl = card.querySelector('.offer-title');
+        const priceEl = card.querySelector('.text-lg');
         return {
-          title: text.slice(0, 150),
-          price: priceMatch ? parseFloat(priceMatch[1]) : null,
+          title: titleEl?.textContent.trim().toLowerCase() || '',
+          price: priceEl ? parseFloat(priceEl.textContent.replace('$', '')) : null,
         };
-      }).filter(r => r.price && r.price > 0);
+      }).filter(r => r.price && r.price > 0 && r.title);
     });
 
     if (results.length === 0) break;
 
     const filtered = results.filter(r => {
-      const t = r.title.toLowerCase();
-      // Require every word in the seed name AND the word "seed" to appear
+      const t = r.title;
+      // Must contain all keywords from seed name
       const keywords = seedName.toLowerCase().replace(' seed', '').split(' ');
       const nameMatch = keywords.every(word => t.includes(word)) && t.includes('seed');
       const notExcluded = !excludeTerms.some(ex => t.includes(ex));
