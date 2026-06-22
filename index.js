@@ -11,7 +11,7 @@ const SEEDS = [
   { name: "Venom Spitter Seed",   search: "Venom Spitter Seed",   exclude: ["robux", "roll"] },
   { name: "Poison Apple Seed",    search: "Poison Apple Seed",    exclude: ["robux", "roll"] },
   { name: "Venus Fly Trap Seed",  search: "Venus Fly Trap Seed",  exclude: ["robux", "roll"] },
-  { name: "Bamboo Seed",          search: "Bamboo Seed",          exclude: ["robux", "roll"] },
+  { name: "Bamboo Seed",          search: "Bamboo Seed",          exclude: ["robux", "roll", "btc"] },
   { name: "Mushroom Seed",        search: "Mushroom Seed",        exclude: ["robux", "roll"] },
   { name: "Pomegranate Seed",     search: "Pomegranate Seed",     exclude: ["robux", "roll"] },
 ];
@@ -49,14 +49,14 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
 
     const filtered = results.filter(r => {
       const t = r.title.toLowerCase();
-      const nameMatch = t.includes(seedName.toLowerCase().replace(' seed', ''));
+      const keyword = seedName.toLowerCase().split(' ')[0];
+      const nameMatch = t.includes(keyword);
       const notExcluded = !excludeTerms.some(ex => t.includes(ex));
       return nameMatch && notExcluded;
     });
 
     console.log(`  [${seedName}] Page ${pageIndex}: ${filtered.length} matching listings`);
 
-    // Stop as soon as we find matches — prices sorted low to high so first match = cheapest
     if (filtered.length > 0) {
       return Math.min(...filtered.map(r => r.price));
     }
