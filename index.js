@@ -3,7 +3,6 @@ const { google } = require("googleapis");
 
 const SPREADSHEET_ID = "1124M88x32AuUN9TzmE_dr4ot6Rnt1Gu62VYPnBHXgxE";
 const SHEET_NAME = "Tracker";
-const MIN_PRICE = 0.05;
 
 const SEEDS = [
   { name: "Ghost Pepper Seed",    search: "Ghost Pepper Seed",    exclude: ["super ghost", "robux", "roll"] },
@@ -59,9 +58,7 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
     console.log(`  [${seedName}] Page ${pageIndex}: ${filtered.length} matching listings`);
 
     if (filtered.length > 0) {
-      const cheapest = Math.min(...filtered.map(r => r.price));
-      // Apply minimum price floor
-      return Math.max(cheapest, MIN_PRICE);
+      return Math.min(...filtered.map(r => r.price));
     }
   }
 
@@ -87,7 +84,10 @@ async function setupSheet(sheets) {
 
   const formulas = SEEDS.map((_, i) => {
     const row = i + 2;
-    return [`=IF(B${row}="","",B${row}*1.5)`, `=IF(B${row}="","",C${row}-B${row})`];
+    return [
+      `=IF(B${row}="","",MAX(B${row},0.05)*1.5)`,
+      `=IF(B${row}="","",C${row}-B${row})`
+    ];
   });
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
@@ -138,7 +138,7 @@ async function run() {
       console.log(`\nSearching for: ${seed.name}`);
       const price = await scrapeCheapestPrice(page, seed.name, seed.search, seed.exclude);
       if (price) {
-        console.log(`✅ ${seed.name}: $${price.toFixed(2)} → your price: $${(price * 1.5).toFixed(2)}`);
+        console.log(`✅ ${seed.name}: $${price.toFixed(2)} → your price: $${(Math.max(price, 0.05) * 1.5).toFixed(2)}`);
       } else {
         console.log(`❌ ${seed.name}: no listings found`);
       }
