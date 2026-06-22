@@ -65,6 +65,57 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
   return null;
 }
 
+async function scrapeShecklesPrice(page) {
+  console.log("\nSearching for: Sheckles (100M)");
+  await page.goto(
+    "https://www.eldorado.gg/grow-a-garden-2-sheckles/g/430?offerSortingCriterion=LowestMinQty",
+    { waitUntil: "networkidle2", timeout: 60000 }
+  );
+  await new Promise(r => setTimeout(r, 4000));
+
+  const cheapest = await page.evaluate(() => {
+    const lines = document.body.innerText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const sellers = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const priceMatch = lines[i].match(/^\$([\d.]+)\s*\/\s*M$/);
+      if (priceMatch) {
+        let minQty = null, stock = null;
+        for (let j = i; j < Math.min(i + 12, lines.length); j++) {
+          if (lines[j] === 'Min. qty.') {
+            const qtyMatch = lines[j+1]?.match(/^([\d,]+)\s*M$/);
+            if (qtyMatch) minQty = parseInt(qtyMatch[1].replace(',', ''));
+          }
+          if (lines[j] === 'Stock') {
+            const stockMatch = lines[j+1]?.match(/^([\d,]+)\s*M$/);
+            if (stockMatch) stock = parseInt(stockMatch[1].replace(',', ''));
+          }
+        }
+        if (minQty !== null && stock !== null) {
+          sellers.push({ price: parseFloat(priceMatch[1]), minQty, stock });
+        }
+      }
+    }
+
+    // Filter: min qty <= 100M AND stock >= 100M, then find cheapest
+    const eligible = sellers
+      .filter(s => s.minQty <= 100 && s.stock >= 100)
+      .sort((a, b) => a.price - b.price);
+
+    return eligible[0] || null;
+  });
+
+  if (cheapest) {
+    // Price for 100M
+    const price100M = parseFloat((cheapest.price * 100).toFixed(4));
+    console.log(`✅ Sheckles: $${cheapest.price}/M → 100M = $${price100M}`);
+    return price100M;
+  }
+
+  console.log("❌ Sheckles: no eligible sellers found");
+  return null;
+}
+
 async function setupSheet(sheets) {
   const headers = [["Item", "Lowest Price (USD)", "Your Price +50%", "Margin", "Last Updated"]];
   await sheets.spreadsheets.values.update({
@@ -74,17 +125,18 @@ async function setupSheet(sheets) {
     requestBody: { values: headers },
   });
 
-  const seedNames = SEEDS.map(s => [s.name]);
+  // Seeds in rows 2-10, Sheckles in row 11
+  const seedNames = [...SEEDS.map(s => [s.name]), ["Sheckles (100M)"]];
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${SHEET_NAME}!A2:A${SEEDS.length + 1}`,
+    range: `${SHEET_NAME}!A2:A${seedNames.length + 1}`,
     valueInputOption: "USER_ENTERED",
     requestBody: { values: seedNames },
   });
 
-  const formulas = SEEDS.map((_, i) => {
+  const formulas = seedNames.map((s, i) => {
     const row = i + 2;
-    const seedName = SEEDS[i].name;
+    const seedName = s[0];
 
     if (seedName === "Bamboo Seed" || seedName === "Mushroom Seed") {
       return [
@@ -101,7 +153,7 @@ async function setupSheet(sheets) {
 
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${SHEET_NAME}!C2:D${SEEDS.length + 1}`,
+    range: `${SHEET_NAME}!C2:D${seedNames.length + 1}`,
     valueInputOption: "USER_ENTERED",
     requestBody: { values: formulas },
   });
@@ -128,7 +180,7 @@ async function updateSheet(sheets, results) {
 }
 
 async function run() {
-  console.log(`[${new Date().toISOString()}] Starting price check for ${SEEDS.length} seeds...`);
+  console.log(`[${new Date().toISOString()}] Starting price check...`);
 
   const sheets = await getSheetClient();
   await setupSheet(sheets);
@@ -154,6 +206,10 @@ async function run() {
       }
       results.push(price);
     }
+
+    // Scrape Sheckles
+    const shecklesPrice = await scrapeShecklesPrice(page);
+    results.push(shecklesPrice);
 
   } finally {
     await browser.close();
