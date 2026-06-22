@@ -49,7 +49,6 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
 
     const filtered = results.filter(r => {
       const t = r.title;
-      // Must contain all keywords from seed name
       const keywords = seedName.toLowerCase().replace(' seed', '').split(' ');
       const nameMatch = keywords.every(word => t.includes(word)) && t.includes('seed');
       const notExcluded = !excludeTerms.some(ex => t.includes(ex));
@@ -86,7 +85,7 @@ async function setupSheet(sheets) {
   const formulas = SEEDS.map((_, i) => {
     const row = i + 2;
     return [
-      `=IF(B${row}="","",MAX(B${row},0.05)*1.5)`,
+      `=IF(B${row}="","",CEILING(MAX(B${row},0.05)*1.5,0.1))`,
       `=IF(B${row}="","",C${row}-B${row})`
     ];
   });
@@ -139,7 +138,7 @@ async function run() {
       console.log(`\nSearching for: ${seed.name}`);
       const price = await scrapeCheapestPrice(page, seed.name, seed.search, seed.exclude);
       if (price) {
-        console.log(`✅ ${seed.name}: $${price.toFixed(2)} → your price: $${(Math.max(price, 0.05) * 1.5).toFixed(2)}`);
+        console.log(`✅ ${seed.name}: $${price.toFixed(2)} → your price: $${(Math.ceil(Math.max(price, 0.05) * 1.5 * 10) / 10).toFixed(2)}`);
       } else {
         console.log(`❌ ${seed.name}: no listings found`);
       }
