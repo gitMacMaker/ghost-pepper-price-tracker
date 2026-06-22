@@ -107,9 +107,8 @@ async function scrapeShecklesPrice(page) {
 
   if (cheapest) {
     // Price for 100M
-    const price100M = parseFloat((cheapest.price * 100).toFixed(4));
-    console.log(`✅ Sheckles: $${cheapest.price}/M → 100M = $${price100M}`);
-    return price100M;
+   console.log(`✅ Sheckles: $${cheapest.price}/M`);
+return cheapest.price;
   }
 
   console.log("❌ Sheckles: no eligible sellers found");
