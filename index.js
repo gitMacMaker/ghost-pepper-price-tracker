@@ -28,8 +28,6 @@ async function getSheetClient() {
 async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
   const BASE_URL = `https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=${encodeURIComponent(searchQuery)}&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=`;
 
-  let allPrices = [];
-
   for (let pageIndex = 1; pageIndex <= 8; pageIndex++) {
     console.log(`  [${seedName}] Checking page ${pageIndex}...`);
     await page.goto(BASE_URL + pageIndex, { waitUntil: "networkidle2", timeout: 60000 });
@@ -57,15 +55,14 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
     });
 
     console.log(`  [${seedName}] Page ${pageIndex}: ${filtered.length} matching listings`);
-    allPrices.push(...filtered.map(r => r.price));
 
-    const maxPrice = Math.max(...results.map(r => r.price));
-    if (filtered.length > 0 && maxPrice > 20) break;
-    if (filtered.length === 0 && allPrices.length > 0) break;
+    // Stop as soon as we find matches — prices sorted low to high so first match = cheapest
+    if (filtered.length > 0) {
+      return Math.min(...filtered.map(r => r.price));
+    }
   }
 
-  if (allPrices.length === 0) return null;
-  return Math.min(...allPrices);
+  return null;
 }
 
 async function setupSheet(sheets) {
