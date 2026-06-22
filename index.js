@@ -49,8 +49,9 @@ async function scrapeCheapestPrice(page, seedName, searchQuery, excludeTerms) {
 
     const filtered = results.filter(r => {
       const t = r.title.toLowerCase();
-      const keyword = seedName.toLowerCase().split(' ')[0];
-      const nameMatch = t.includes(keyword);
+      // Require every word in the seed name AND the word "seed" to appear
+      const keywords = seedName.toLowerCase().replace(' seed', '').split(' ');
+      const nameMatch = keywords.every(word => t.includes(word)) && t.includes('seed');
       const notExcluded = !excludeTerms.some(ex => t.includes(ex));
       return nameMatch && notExcluded;
     });
