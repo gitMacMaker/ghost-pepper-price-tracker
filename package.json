@@ -1,0 +1,12 @@
+{
+  "name": "ghost-pepper-price-tracker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0",
+    "googleapis": "^140.0.0"
+  }
+}
