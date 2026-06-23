@@ -16,6 +16,8 @@ const ITEMS = [
   { name: "Pomegranate Seed",    row: 10, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Pomegranate%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "pomegranate", exclude: ["robux", "roll", "fruit", "not a"] },
 ];
 
+const MIN_LEGIT_PRICE = 0.50;
+
 async function getSheetClient() {
   const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
   const auth = new google.auth.GoogleAuth({
@@ -26,7 +28,7 @@ async function getSheetClient() {
 }
 
 async function scrapeItem(page, item) {
-  for (let pageIndex = 1; pageIndex <= 8; pageIndex++) {
+  for (let pageIndex = 1; pageIndex <= 50; pageIndex++) {
     console.log(`  [${item.name}] Checking page ${pageIndex}...`);
     await page.goto(item.url + pageIndex, { waitUntil: "networkidle2", timeout: 60000 });
     await new Promise(r => setTimeout(r, 3500));
@@ -57,7 +59,8 @@ async function scrapeItem(page, item) {
       const notExcluded = !item.exclude.some(ex => t.includes(ex));
       const totalCost = r.price * r.minQty;
       const withinBudget = totalCost <= 20;
-      return nameMatch && notExcluded && withinBudget;
+      const notScam = r.price >= MIN_LEGIT_PRICE;
+      return nameMatch && notExcluded && withinBudget && notScam;
     });
 
     console.log(`  [${item.name}] Page ${pageIndex}: ${filtered.length} matching listings`);
