@@ -25,8 +25,8 @@ const ITEMS = [
   { name: "Bee",         url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=bee&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",           keyword: "bee",         exclude: ["robux", "roll"] },
   { name: "Monkey",      url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=monkey&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",        keyword: "monkey",      exclude: ["robux", "roll"] },
   // Gear
-  { name: "Super Watering Can",  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20watering&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "super watering", exclude: ["robux", "roll", "sprinkler"] },
-  { name: "Super Sprinkler",     url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",   keyword: "super sprinkler", exclude: ["robux", "roll", "watering", "legendary"] },
+  { name: "Super Watering Can",  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20watering&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",     keyword: "super watering",    exclude: ["robux", "roll", "sprinkler"] },
+  { name: "Super Sprinkler",     url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "super sprinkler",   exclude: ["robux", "roll", "watering", "legendary"] },
   { name: "Legendary Sprinkler", url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=legendary%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "legendary sprinkler", exclude: ["robux", "roll", "watering", "rare"] },
 ];
 
@@ -50,9 +50,15 @@ async function scrapeItem(page, item) {
       return cards.map(card => {
         const titleEl = card.querySelector('.offer-title');
         const priceEl = card.querySelector('.text-lg');
+        // Try to find min quantity on the card
+        const allText = card.textContent.replace(/\s+/g, ' ').trim();
+        const minQtyMatch = allText.match(/min\.?\s*(?:qty\.?)?\s*:?\s*(\d+)/i) ||
+                            allText.match(/minimum[:\s]+(\d+)/i) ||
+                            allText.match(/x(\d+)\b/i);
         return {
           title: titleEl?.textContent.trim().toLowerCase() || '',
           price: priceEl ? parseFloat(priceEl.textContent.replace('$', '')) : null,
+          minQty: minQtyMatch ? parseInt(minQtyMatch[1]) : 1,
         };
       }).filter(r => r.price && r.price > 0 && r.title);
     });
@@ -70,7 +76,9 @@ async function scrapeItem(page, item) {
     console.log(`  [${item.name}] Page ${pageIndex}: ${filtered.length} matching listings`);
 
     if (filtered.length > 0) {
-      return Math.min(...filtered.map(r => r.price));
+      // Find cheapest and return price + minQty
+      const cheapest = filtered.reduce((a, b) => a.price < b.price ? a : b);
+      return { price: cheapest.price, minQty: cheapest.minQty };
     }
   }
 
@@ -117,8 +125,8 @@ async function scrapeShecklesPrice(page) {
   });
 
   if (cheapest) {
-    console.log(`✅ Sheckles: $${cheapest.price}/M`);
-    return cheapest.price;
+    console.log(`✅ Sheckles: $${cheapest.price}/M, min qty: ${cheapest.minQty}M`);
+    return { price: cheapest.price, minQty: cheapest.minQty, isSheckles: true };
   }
 
   console.log("❌ Sheckles: no eligible sellers found");
@@ -126,10 +134,10 @@ async function scrapeShecklesPrice(page) {
 }
 
 async function setupSheet(sheets) {
-  const headers = [["Item", "Lowest Price (USD)", "Your Price +50%", "Margin", "Last Updated"]];
+  const headers = [["Item", "Lowest Price (USD)", "Your Price +50%", "Margin", "Min Qty", "Last Updated"]];
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${SHEET_NAME}!A1:E1`,
+    range: `${SHEET_NAME}!A1:F1`,
     valueInputOption: "USER_ENTERED",
     requestBody: { values: headers },
   });
@@ -176,11 +184,14 @@ async function updateSheet(sheets, results) {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
   const data = [];
 
-  results.forEach((price, i) => {
+  results.forEach((result, i) => {
     const row = i + 2;
-    if (price !== null) {
-      data.push({ range: `${SHEET_NAME}!B${row}`, values: [[price]] });
-      data.push({ range: `${SHEET_NAME}!E${row}`, values: [[now]] });
+    if (result !== null) {
+      data.push({ range: `${SHEET_NAME}!B${row}`, values: [[result.price]] });
+      // Min qty — show with M suffix for sheckles
+      const minQtyDisplay = result.isSheckles ? `${result.minQty}M` : result.minQty;
+      data.push({ range: `${SHEET_NAME}!E${row}`, values: [[minQtyDisplay]] });
+      data.push({ range: `${SHEET_NAME}!F${row}`, values: [[now]] });
     }
   });
 
@@ -211,17 +222,17 @@ async function run() {
 
     for (const item of ITEMS) {
       console.log(`\nSearching for: ${item.name}`);
-      const price = await scrapeItem(page, item);
-      if (price) {
-        console.log(`✅ ${item.name}: $${price.toFixed(2)}`);
+      const result = await scrapeItem(page, item);
+      if (result) {
+        console.log(`✅ ${item.name}: $${result.price.toFixed(2)}, min qty: ${result.minQty}`);
       } else {
         console.log(`❌ ${item.name}: no listings found`);
       }
-      results.push(price);
+      results.push(result);
     }
 
-    const shecklesPrice = await scrapeShecklesPrice(page);
-    results.push(shecklesPrice);
+    const shecklesResult = await scrapeShecklesPrice(page);
+    results.push(shecklesResult);
 
   } finally {
     await browser.close();
