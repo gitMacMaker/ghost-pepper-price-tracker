@@ -189,8 +189,8 @@ async function updateSheet(sheets, results) {
     if (result !== null) {
       data.push({ range: `${SHEET_NAME}!B${row}`, values: [[result.price]] });
       // Min qty — show with M suffix for sheckles
-      const minQtyDisplay = result.isSheckles ? `${result.minQty}M` : result.minQty;
-      data.push({ range: `${SHEET_NAME}!E${row}`, values: [[minQtyDisplay]] });
+     const minQtyDisplay = result.isSheckles ? `${result.minQty}M` : `${result.minQty}`;
+data.push({ range: `${SHEET_NAME}!E${row}`, values: [[minQtyDisplay]] });
       data.push({ range: `${SHEET_NAME}!F${row}`, values: [[now]] });
     }
   });
