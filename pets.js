@@ -5,14 +5,14 @@ const SPREADSHEET_ID = "1124M88x32AuUN9TzmE_dr4ot6Rnt1Gu62VYPnBHXgxE";
 const SHEET_NAME = "Tracker";
 
 const ITEMS = [
-  { name: "Unicorn",     row: 11, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Unicorn&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "unicorn",     exclude: ["robux", "roll"] },
-  { name: "Raccoon",     row: 12, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Raccoon&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "raccoon",     exclude: ["robux", "roll"] },
-  { name: "Dragonfly",   row: 13, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Dragonfly&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",  keyword: "dragonfly",   exclude: ["robux", "roll"] },
-  { name: "Deer",        row: 14, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=deer&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",          keyword: "deer",        exclude: ["robux", "roll"] },
-  { name: "Robin",       row: 15, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=robin&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",         keyword: "robin",       exclude: ["robux", "roll"] },
-  { name: "Ice Serpent", row: 16, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=ice%20serpent&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "ice serpent", exclude: ["robux", "roll"] },
-  { name: "Bee",         row: 17, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=bee&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",           keyword: "bee",         exclude: ["robux", "roll"] },
-  { name: "Monkey",      row: 18, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=monkey&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",        keyword: "monkey",      exclude: ["robux", "roll"] },
+  { name: "Unicorn",     row: 11, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Unicorn&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "unicorn",     exclude: ["robux", "roll", "not a"] },
+  { name: "Raccoon",     row: 12, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Raccoon&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "raccoon",     exclude: ["robux", "roll", "not a"] },
+  { name: "Dragonfly",   row: 13, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Dragonfly&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",  keyword: "dragonfly",   exclude: ["robux", "roll", "not a"] },
+  { name: "Deer",        row: 14, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=deer&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",          keyword: "deer",        exclude: ["robux", "roll", "not a"] },
+  { name: "Robin",       row: 15, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=robin&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",         keyword: "robin",       exclude: ["robux", "roll", "not a"] },
+  { name: "Ice Serpent", row: 16, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=ice%20serpent&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "ice serpent", exclude: ["robux", "roll", "not a"] },
+  { name: "Bee",         row: 17, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=bee&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",           keyword: "bee",         exclude: ["robux", "roll", "not a"] },
+  { name: "Monkey",      row: 18, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=monkey&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",        keyword: "monkey",      exclude: ["robux", "roll", "not a"] },
 ];
 
 async function getSheetClient() {
@@ -54,7 +54,9 @@ async function scrapeItem(page, item) {
       const keywords = item.keyword.toLowerCase().split(' ');
       const nameMatch = keywords.every(word => t.includes(word));
       const notExcluded = !item.exclude.some(ex => t.includes(ex));
-      return nameMatch && notExcluded;
+      const totalCost = r.price * r.minQty;
+      const withinBudget = totalCost <= 20;
+      return nameMatch && notExcluded && withinBudget;
     });
 
     console.log(`  [${item.name}] Page ${pageIndex}: ${filtered.length} matching listings`);
