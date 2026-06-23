@@ -116,9 +116,9 @@ async function scrapeShecklesPrice(page) {
     }
 
     // Find cheapest seller where they have enough stock to fulfill their own minimum
-    const eligible = sellers
-      .filter(s => s.stock >= s.minQty)
-      .sort((a, b) => a.price - b.price);
+   const eligible = sellers
+  .filter(s => s.minQty <= 100 && s.stock >= s.minQty)
+  .sort((a, b) => a.price - b.price);
 
     return eligible[0] || null;
   });
