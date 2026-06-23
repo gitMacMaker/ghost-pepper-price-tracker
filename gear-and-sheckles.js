@@ -5,12 +5,13 @@ const SPREADSHEET_ID = "1124M88x32AuUN9TzmE_dr4ot6Rnt1Gu62VYPnBHXgxE";
 const SHEET_NAME = "Tracker";
 
 const GEAR = [
-  { name: "Super Watering Can",  row: 19, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20watering&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",     keyword: "super watering",    exclude: ["robux", "roll", "sprinkler", "not a"] },
-  { name: "Super Sprinkler",     row: 20, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "super sprinkler",   exclude: ["robux", "roll", "watering", "legendary", "not a"] },
-  { name: "Legendary Sprinkler", row: 21, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=legendary%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "legendary sprinkler", exclude: ["robux", "roll", "watering", "rare", "not a"] },
+  { name: "Super Watering Can",  row: 19, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20watering&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",     keyword: "super watering",    exclude: ["robux", "roll", "sprinkler", "not a", "mega"] },
+  { name: "Super Sprinkler",     row: 20, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "super sprinkler",   exclude: ["robux", "roll", "watering", "legendary", "not a", "mega"] },
+  { name: "Legendary Sprinkler", row: 21, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=legendary%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "legendary sprinkler", exclude: ["robux", "roll", "watering", "rare", "not a", "mega"] },
 ];
 
 const SHECKLES_ROW = 22;
+const MIN_LEGIT_PRICE = 0.50;
 
 async function getSheetClient() {
   const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
@@ -22,7 +23,7 @@ async function getSheetClient() {
 }
 
 async function scrapeItem(page, item) {
-  for (let pageIndex = 1; pageIndex <= 8; pageIndex++) {
+  for (let pageIndex = 1; pageIndex <= 50; pageIndex++) {
     console.log(`  [${item.name}] Checking page ${pageIndex}...`);
     await page.goto(item.url + pageIndex, { waitUntil: "networkidle2", timeout: 60000 });
     await new Promise(r => setTimeout(r, 3500));
@@ -53,7 +54,8 @@ async function scrapeItem(page, item) {
       const notExcluded = !item.exclude.some(ex => t.includes(ex));
       const totalCost = r.price * r.minQty;
       const withinBudget = totalCost <= 20;
-      return nameMatch && notExcluded && withinBudget;
+      const notScam = r.price >= MIN_LEGIT_PRICE;
+      return nameMatch && notExcluded && withinBudget && notScam;
     });
 
     console.log(`  [${item.name}] Page ${pageIndex}: ${filtered.length} matching listings`);
