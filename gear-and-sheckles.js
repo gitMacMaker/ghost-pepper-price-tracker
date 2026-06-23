@@ -5,9 +5,9 @@ const SPREADSHEET_ID = "1124M88x32AuUN9TzmE_dr4ot6Rnt1Gu62VYPnBHXgxE";
 const SHEET_NAME = "Tracker";
 
 const GEAR = [
-  { name: "Super Watering Can",  row: 19, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20watering&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",     keyword: "super watering",    exclude: ["robux", "roll", "sprinkler"] },
-  { name: "Super Sprinkler",     row: 20, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "super sprinkler",   exclude: ["robux", "roll", "watering", "legendary"] },
-  { name: "Legendary Sprinkler", row: 21, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=legendary%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "legendary sprinkler", exclude: ["robux", "roll", "watering", "rare"] },
+  { name: "Super Watering Can",  row: 19, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20watering&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",     keyword: "super watering",    exclude: ["robux", "roll", "sprinkler", "not a"] },
+  { name: "Super Sprinkler",     row: 20, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "super sprinkler",   exclude: ["robux", "roll", "watering", "legendary", "not a"] },
+  { name: "Legendary Sprinkler", row: 21, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=legendary%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "legendary sprinkler", exclude: ["robux", "roll", "watering", "rare", "not a"] },
 ];
 
 const SHECKLES_ROW = 22;
@@ -51,7 +51,9 @@ async function scrapeItem(page, item) {
       const keywords = item.keyword.toLowerCase().split(' ');
       const nameMatch = keywords.every(word => t.includes(word));
       const notExcluded = !item.exclude.some(ex => t.includes(ex));
-      return nameMatch && notExcluded;
+      const totalCost = r.price * r.minQty;
+      const withinBudget = totalCost <= 20;
+      return nameMatch && notExcluded && withinBudget;
     });
 
     console.log(`  [${item.name}] Page ${pageIndex}: ${filtered.length} matching listings`);
@@ -107,12 +109,9 @@ async function scrapeSheckles(page) {
 async function updateSheet(sheets, row, result, isSheckles = false) {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
 
-  let formula;
-  if (isSheckles) {
-    formula = `=IF(B${row}="","",CEILING(MAX(B${row},0.005)*1.5,0.01))`;
-  } else {
-    formula = `=IF(B${row}="","",CEILING(MAX(B${row},0.05)*1.5,0.1))`;
-  }
+  const formula = isSheckles
+    ? `=IF(B${row}="","",CEILING(MAX(B${row},0.005)*1.5,0.01))`
+    : `=IF(B${row}="","",CEILING(MAX(B${row},0.05)*1.5,0.1))`;
 
   const priceData = [
     { range: `${SHEET_NAME}!B${row}`, values: [[result.price]] },
