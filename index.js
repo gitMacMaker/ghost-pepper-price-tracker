@@ -50,7 +50,6 @@ async function scrapeItem(page, item) {
       return cards.map(card => {
         const titleEl = card.querySelector('.offer-title');
         const priceEl = card.querySelector('.text-lg');
-        // Try to find min quantity on the card
         const allText = card.textContent.replace(/\s+/g, ' ').trim();
         const minQtyMatch = allText.match(/min\.?\s*(?:qty\.?)?\s*:?\s*(\d+)/i) ||
                             allText.match(/minimum[:\s]+(\d+)/i) ||
@@ -76,7 +75,6 @@ async function scrapeItem(page, item) {
     console.log(`  [${item.name}] Page ${pageIndex}: ${filtered.length} matching listings`);
 
     if (filtered.length > 0) {
-      // Find cheapest and return price + minQty
       const cheapest = filtered.reduce((a, b) => a.price < b.price ? a : b);
       return { price: cheapest.price, minQty: cheapest.minQty };
     }
@@ -182,23 +180,33 @@ async function setupSheet(sheets) {
 
 async function updateSheet(sheets, results) {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
-  const data = [];
+
+  // Prices use USER_ENTERED so formulas work
+  const priceData = [];
+  // Min qty and timestamps use RAW so numbers aren't interpreted as dates
+  const rawData = [];
 
   results.forEach((result, i) => {
     const row = i + 2;
     if (result !== null) {
-      data.push({ range: `${SHEET_NAME}!B${row}`, values: [[result.price]] });
-      // Min qty — show with M suffix for sheckles
-     const minQtyDisplay = result.isSheckles ? `${result.minQty}M` : `${result.minQty}`;
-data.push({ range: `${SHEET_NAME}!E${row}`, values: [[minQtyDisplay]] });
-      data.push({ range: `${SHEET_NAME}!F${row}`, values: [[now]] });
+      priceData.push({ range: `${SHEET_NAME}!B${row}`, values: [[result.price]] });
+      const minQtyDisplay = result.isSheckles ? `${result.minQty}M` : `${result.minQty}`;
+      rawData.push({ range: `${SHEET_NAME}!E${row}`, values: [[minQtyDisplay]] });
+      rawData.push({ range: `${SHEET_NAME}!F${row}`, values: [[now]] });
     }
   });
 
-  if (data.length > 0) {
+  if (priceData.length > 0) {
     await sheets.spreadsheets.values.batchUpdate({
       spreadsheetId: SPREADSHEET_ID,
-      requestBody: { valueInputOption: "USER_ENTERED", data },
+      requestBody: { valueInputOption: "USER_ENTERED", data: priceData },
+    });
+  }
+
+  if (rawData.length > 0) {
+    await sheets.spreadsheets.values.batchUpdate({
+      spreadsheetId: SPREADSHEET_ID,
+      requestBody: { valueInputOption: "RAW", data: rawData },
     });
   }
 }
