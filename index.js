@@ -86,7 +86,7 @@ async function scrapeItem(page, item) {
 async function scrapeShecklesPrice(page) {
   console.log("\nSearching for: Sheckles");
   await page.goto(
-    "https://www.eldorado.gg/grow-a-garden-2-sheckles/g/430?offerSortingCriterion=Cheapest",
+    "https://www.eldorado.gg/grow-a-garden-2-sheckles/g/430?offerSortingCriterion=LowestMinQty",
     { waitUntil: "networkidle2", timeout: 60000 }
   );
   await new Promise(r => setTimeout(r, 4000));
@@ -115,7 +115,7 @@ async function scrapeShecklesPrice(page) {
       }
     }
 
-    // Just need stock >= minQty, no cap on minQty
+    // Find cheapest seller where they have enough stock to fulfill their own minimum
     const eligible = sellers
       .filter(s => s.stock >= s.minQty)
       .sort((a, b) => a.price - b.price);
