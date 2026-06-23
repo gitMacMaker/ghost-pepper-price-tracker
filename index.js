@@ -115,9 +115,9 @@ async function scrapeShecklesPrice(page) {
       }
     }
 
-    const eligible = sellers
-      .filter(s => s.minQty <= 100 && s.stock >= 100)
-      .sort((a, b) => a.price - b.price);
+  const eligible = sellers
+  .filter(s => s.stock >= s.minQty)
+  .sort((a, b) => a.price - b.price);
 
     return eligible[0] || null;
   });
