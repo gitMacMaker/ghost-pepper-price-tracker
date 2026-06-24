@@ -16,7 +16,7 @@ const ITEMS = [
   { name: "Turtle",      row: 19, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=turtle&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",        keyword: "turtle",      exclude: ["robux", "roll", "not a", "mega"] },
 ];
 
-const MIN_LEGIT_PRICE = 0.50;
+const MIN_LEGIT_PRICE = 0.05;
 
 async function getSheetClient() {
   const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
