@@ -16,7 +16,7 @@ const ITEMS = [
   { name: "Pomegranate Seed",    row: 10, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Pomegranate%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "pomegranate", exclude: ["robux", "roll", "fruit", "not a"] },
 ];
 
-const MIN_LEGIT_PRICE = 0.50;
+const MIN_LEGIT_PRICE = 0.01;
 
 async function getSheetClient() {
   const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
