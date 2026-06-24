@@ -57,7 +57,7 @@ async function scrapeItem(page, item) {
       const nameMatch = keywords.every(word => t.includes(word));
       const notExcluded = !item.exclude.some(ex => t.includes(ex));
       const totalCost = r.price * r.minQty;
-      const withinBudget = totalCost <= 20;
+      const withinBudget = r.minQty <= 10 || totalCost <= 20;
       const notScam = r.price >= MIN_LEGIT_PRICE;
       return nameMatch && notExcluded && withinBudget && notScam;
     });
