@@ -53,7 +53,7 @@ async function scrapeItem(page, item) {
       const nameMatch = keywords.every(word => t.includes(word));
       const notExcluded = !item.exclude.some(ex => t.includes(ex));
       const totalCost = r.price * r.minQty;
-      const withinBudget = totalCost <= 20;
+      const withinBudget = r.minQty <= 10 || totalCost <= 20;
       const notScam = r.price >= MIN_LEGIT_PRICE;
       return nameMatch && notExcluded && withinBudget && notScam;
     });
@@ -111,9 +111,12 @@ async function scrapeSheckles(page) {
 async function updateSheet(sheets, row, result, isSheckles = false) {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
 
-  const formula = isSheckles
-    ? `=IF(B${row}="","",CEILING(MAX(B${row},0.005)*1.5,0.01))`
-    : `=IF(B${row}="","",CEILING(MAX(B${row},0.05)*1.5,0.1))`;
+  let formula;
+  if (isSheckles) {
+    formula = `=IF(B${row}="","",CEILING(IF(B${row}>10,B${row}*1.2,MAX(B${row},0.005)*1.5),0.01))`;
+  } else {
+    formula = `=IF(B${row}="","",CEILING(IF(B${row}>10,B${row}*1.2,MAX(B${row},0.05)*1.5),0.1))`;
+  }
 
   const priceData = [
     { range: `${SHEET_NAME}!B${row}`, values: [[result.price]] },
@@ -178,5 +181,5 @@ async function run() {
 
 run().catch(err => {
   console.error("Fatal error:", err.message);
-  process.exit(1);
+  process.exit(1));
 });
