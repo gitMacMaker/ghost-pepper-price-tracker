@@ -11,7 +11,7 @@ const GEAR = [
 ];
 
 const SHECKLES_ROW = 23;
-const MIN_LEGIT_PRICE = 0.50;
+const MIN_LEGIT_PRICE = 0.05;
 
 async function getSheetClient() {
   const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
@@ -52,10 +52,11 @@ async function scrapeItem(page, item) {
       const keywords = item.keyword.toLowerCase().split(' ');
       const nameMatch = keywords.every(word => t.includes(word));
       const notExcluded = !item.exclude.some(ex => t.includes(ex));
-      const totalCost = r.price * r.minQty;
-      const withinBudget = r.minQty <= 10 || totalCost <= 20;
-      const notScam = r.price >= MIN_LEGIT_PRICE;
-      return nameMatch && notExcluded && withinBudget && notScam;
+     const totalCost = r.price * r.minQty;
+const withinBudget = r.minQty <= 10 || totalCost <= 20;
+const notScam = r.price >= MIN_LEGIT_PRICE;
+const meetsMinRevenue = r.price >= 0.20 || totalCost >= 1;
+return nameMatch && notExcluded && withinBudget && notScam && meetsMinRevenue;
     });
 
     console.log(`  [${item.name}] Page ${pageIndex}: ${filtered.length} matching listings`);
