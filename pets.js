@@ -5,14 +5,15 @@ const SPREADSHEET_ID = "1124M88x32AuUN9TzmE_dr4ot6Rnt1Gu62VYPnBHXgxE";
 const SHEET_NAME = "Tracker";
 
 const ITEMS = [
-  { name: "Unicorn",     row: 11, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Unicorn&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "unicorn",     exclude: ["robux", "roll", "not a", "mega"] },
-  { name: "Raccoon",     row: 12, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Raccoon&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "raccoon",     exclude: ["robux", "roll", "not a", "mega"] },
-  { name: "Dragonfly",   row: 13, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&hotSearchQuery=Dragonfly&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",  keyword: "dragonfly",   exclude: ["robux", "roll", "not a", "mega"] },
-  { name: "Deer",        row: 14, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=deer&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",          keyword: "deer",        exclude: ["robux", "roll", "not a", "mega"] },
-  { name: "Robin",       row: 15, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=robin&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",         keyword: "robin",       exclude: ["robux", "roll", "not a", "mega"] },
-  { name: "Ice Serpent", row: 16, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=ice%20serpent&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "ice serpent", exclude: ["robux", "roll", "not a", "mega"] },
-  { name: "Bee",         row: 17, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=bee&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",           keyword: "bee",         exclude: ["robux", "roll", "not a", "mega"] },
-  { name: "Monkey",      row: 18, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=monkey&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",        keyword: "monkey",      exclude: ["robux", "roll", "not a", "mega"] },
+  { name: "Ghost Pepper Seed",   row: 2,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Ghost%20Pepper%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "ghost pepper", exclude: ["super ghost", "robux", "roll", "fruit", "not a"] },
+  { name: "Dragon Breath Seed",  row: 3,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Dragon%20Breath%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "dragon breath", exclude: ["robux", "roll", "fruit", "breathe", "not a"] },
+  { name: "Moon Bloom Seed",     row: 4,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Moon%20Bloom%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "moon bloom", exclude: ["robux", "roll", "fruit", "not a"] },
+  { name: "Venom Spitter Seed",  row: 5,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Venom%20Spitter%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "venom spitter", exclude: ["robux", "roll", "fruit", "not a"] },
+  { name: "Poison Apple Seed",   row: 6,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Poison%20Apple%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "poison apple", exclude: ["robux", "roll", "fruit", "not a"] },
+  { name: "Venus Fly Trap Seed", row: 7,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Venus%20Fly%20Trap%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "venus fly trap", exclude: ["robux", "roll", "fruit", "not a"] },
+  { name: "Bamboo Seed",         row: 8,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Bamboo%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "bamboo", exclude: ["robux", "roll", "btc", "fruit", "not a"] },
+  { name: "Mushroom Seed",       row: 9,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Mushroom%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "mushroom", exclude: ["robux", "roll", "fruit", "not a"] },
+  { name: "Pomegranate Seed",    row: 10, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Pomegranate%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "pomegranate", exclude: ["robux", "roll", "fruit", "not a"] },
 ];
 
 const MIN_LEGIT_PRICE = 0.50;
@@ -72,12 +73,19 @@ async function scrapeItem(page, item) {
   return null;
 }
 
+function getFormula(row, name) {
+  if (name === "Bamboo Seed" || name === "Mushroom Seed") {
+    return `=IF(B${row}="","",IF(B${row}<0.03,0.05,CEILING(IF(B${row}>10,B${row}*1.2,MAX(B${row},0.05)*1.5),0.1)))`;
+  }
+  return `=IF(B${row}="","",CEILING(IF(B${row}>10,B${row}*1.2,MAX(B${row},0.05)*1.5),0.1))`;
+}
+
 async function updateSheet(sheets, item, result) {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
 
   const priceData = [
     { range: `${SHEET_NAME}!B${item.row}`, values: [[result.price]] },
-    { range: `${SHEET_NAME}!C${item.row}`, values: [[`=IF(B${item.row}="","",CEILING(MAX(B${item.row},0.05)*1.5,0.1))`]] },
+    { range: `${SHEET_NAME}!C${item.row}`, values: [[getFormula(item.row, item.name)]] },
     { range: `${SHEET_NAME}!D${item.row}`, values: [[`=IF(B${item.row}="","",C${item.row}-B${item.row})`]] },
   ];
   const rawData = [
@@ -96,7 +104,7 @@ async function updateSheet(sheets, item, result) {
 }
 
 async function run() {
-  console.log(`[${new Date().toISOString()}] Starting pets price check...`);
+  console.log(`[${new Date().toISOString()}] Starting seeds price check...`);
   const sheets = await getSheetClient();
 
   const browser = await puppeteer.launch({
@@ -122,7 +130,7 @@ async function run() {
     await browser.close();
   }
 
-  console.log("\n✅ Pets done!");
+  console.log("\n✅ Seeds done!");
 }
 
 run().catch(err => {
