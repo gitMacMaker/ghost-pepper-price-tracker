@@ -13,6 +13,7 @@ const ITEMS = [
   { name: "Ice Serpent", row: 16, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=ice%20serpent&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "ice serpent", exclude: ["robux", "roll", "not a", "mega"] },
   { name: "Bee",         row: 17, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=bee&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",           keyword: "bee",         exclude: ["robux", "roll", "not a", "mega"] },
   { name: "Monkey",      row: 18, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=monkey&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",        keyword: "monkey",      exclude: ["robux", "roll", "not a", "mega"] },
+  { name: "Turtle",      row: 19, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=pets&searchQuery=turtle&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",        keyword: "turtle",      exclude: ["robux", "roll", "not a", "mega"] },
 ];
 
 const MIN_LEGIT_PRICE = 0.50;
