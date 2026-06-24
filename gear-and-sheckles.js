@@ -181,5 +181,5 @@ async function run() {
 
 run().catch(err => {
   console.error("Fatal error:", err.message);
-  process.exit(1));
+  process.exit(1);
 });
