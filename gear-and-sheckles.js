@@ -42,6 +42,7 @@ async function scrapeItem(page, item) {
           title: titleEl?.textContent.trim().toLowerCase() || '',
           price: priceEl ? parseFloat(priceEl.textContent.replace('$', '')) : null,
           minQty: minQtyMatch ? parseInt(minQtyMatch[1]) : 1,
+          href: card.href || '',
         };
       }).filter(r => r.price && r.price > 0 && r.title);
     });
@@ -64,7 +65,7 @@ async function scrapeItem(page, item) {
 
     if (filtered.length > 0) {
       const cheapest = filtered.reduce((a, b) => a.price < b.price ? a : b);
-      return { price: cheapest.price, minQty: cheapest.minQty };
+      return { price: cheapest.price, minQty: cheapest.minQty, url: cheapest.href };
     }
   }
   return null;
@@ -143,13 +144,12 @@ async function updateSheet(sheets, row, result, isSheckles = false, sourceUrl = 
 async function run() {
   console.log(`[${new Date().toISOString()}] Starting gear & sheckles price check...`);
   const sheets = await getSheetClient();
-  const sheets = await getSheetClient();
-await sheets.spreadsheets.values.update({
-  spreadsheetId: SPREADSHEET_ID,
-  range: `${SHEET_NAME}!G1`,
-  valueInputOption: "RAW",
-  requestBody: { values: [["Eldorado Link"]] },
-});
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${SHEET_NAME}!G1`,
+    valueInputOption: "RAW",
+    requestBody: { values: [["Eldorado Link"]] },
+  });
 
   const browser = await puppeteer.launch({
     headless: "new",
@@ -165,7 +165,7 @@ await sheets.spreadsheets.values.update({
       const result = await scrapeItem(page, item);
       if (result) {
         console.log(`✅ ${item.name}: $${result.price.toFixed(2)}, min qty: ${result.minQty}`);
-        await updateSheet(sheets, item.row, result, false, item.url + '1');
+        await updateSheet(sheets, item.row, result, false, result.url);
       } else {
         console.log(`❌ ${item.name}: no listings found`);
       }
