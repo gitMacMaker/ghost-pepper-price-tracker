@@ -47,6 +47,7 @@ async function scrapeItem(page, item) {
           title: titleEl?.textContent.trim().toLowerCase() || '',
           price: priceEl ? parseFloat(priceEl.textContent.replace('$', '')) : null,
           minQty: minQtyMatch ? parseInt(minQtyMatch[1]) : 1,
+          href: card.href || '',
         };
       }).filter(r => r.price && r.price > 0 && r.title);
     });
@@ -68,7 +69,7 @@ async function scrapeItem(page, item) {
 
     if (filtered.length > 0) {
       const cheapest = filtered.reduce((a, b) => a.price < b.price ? a : b);
-      return { price: cheapest.price, minQty: cheapest.minQty };
+      return { price: cheapest.price, minQty: cheapest.minQty, url: cheapest.href };
     }
   }
   return null;
@@ -83,13 +84,12 @@ function getFormula(row, name) {
 
 async function updateSheet(sheets, item, result) {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
-  const listingUrl = item.url + '1';
 
   const priceData = [
     { range: `${SHEET_NAME}!B${item.row}`, values: [[result.price]] },
     { range: `${SHEET_NAME}!C${item.row}`, values: [[getFormula(item.row, item.name)]] },
     { range: `${SHEET_NAME}!D${item.row}`, values: [[`=IF(B${item.row}="","",C${item.row}-B${item.row})`]] },
-    { range: `${SHEET_NAME}!G${item.row}`, values: [[listingUrl]] },
+    { range: `${SHEET_NAME}!G${item.row}`, values: [[result.url]] },
   ];
   const rawData = [
     { range: `${SHEET_NAME}!E${item.row}`, values: [[`${result.minQty}`]] },
@@ -110,11 +110,11 @@ async function run() {
   console.log(`[${new Date().toISOString()}] Starting seeds price check...`);
   const sheets = await getSheetClient();
   await sheets.spreadsheets.values.update({
-  spreadsheetId: SPREADSHEET_ID,
-  range: `${SHEET_NAME}!G1`,
-  valueInputOption: "RAW",
-  requestBody: { values: [["Eldorado Link"]] },
-});
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${SHEET_NAME}!G1`,
+    valueInputOption: "RAW",
+    requestBody: { values: [["Eldorado Link"]] },
+  });
 
   const browser = await puppeteer.launch({
     headless: "new",
