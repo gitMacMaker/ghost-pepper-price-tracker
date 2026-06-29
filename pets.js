@@ -75,13 +75,13 @@ async function scrapeItem(page, item) {
 
 async function updateSheet(sheets, item, result) {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
-
-  const formula = `=IF(B${item.row}="","",CEILING(IF(B${item.row}>10,B${item.row}*1.2,MAX(B${item.row},0.05)*1.5),0.1))`;
+  const listingUrl = item.url + '1';
 
   const priceData = [
     { range: `${SHEET_NAME}!B${item.row}`, values: [[result.price]] },
-    { range: `${SHEET_NAME}!C${item.row}`, values: [[formula]] },
+    { range: `${SHEET_NAME}!C${item.row}`, values: [[`=IF(B${item.row}="","",CEILING(IF(B${item.row}>10,B${item.row}*1.2,MAX(B${item.row},0.05)*1.5),0.1))`]] },
     { range: `${SHEET_NAME}!D${item.row}`, values: [[`=IF(B${item.row}="","",C${item.row}-B${item.row})`]] },
+    { range: `${SHEET_NAME}!G${item.row}`, values: [[listingUrl]] },
   ];
   const rawData = [
     { range: `${SHEET_NAME}!E${item.row}`, values: [[`${result.minQty}`]] },
