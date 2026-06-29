@@ -11,6 +11,7 @@ const GEAR = [
 ];
 
 const SHECKLES_ROW = 24;
+const SHECKLES_URL = "https://www.eldorado.gg/grow-a-garden-2-sheckles/g/430?offerSortingCriterion=LowestMinQty";
 const MIN_LEGIT_PRICE = 0.05;
 
 async function getSheetClient() {
@@ -71,10 +72,7 @@ async function scrapeItem(page, item) {
 
 async function scrapeSheckles(page) {
   console.log("\nSearching for: Sheckles");
-  await page.goto(
-    "https://www.eldorado.gg/grow-a-garden-2-sheckles/g/430?offerSortingCriterion=LowestMinQty",
-    { waitUntil: "networkidle2", timeout: 60000 }
-  );
+  await page.goto(SHECKLES_URL, { waitUntil: "networkidle2", timeout: 60000 });
   await new Promise(r => setTimeout(r, 4000));
 
   return await page.evaluate(() => {
@@ -109,7 +107,7 @@ async function scrapeSheckles(page) {
   });
 }
 
-async function updateSheet(sheets, row, result, isSheckles = false) {
+async function updateSheet(sheets, row, result, isSheckles = false, sourceUrl = '') {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
 
   let formula;
@@ -123,6 +121,7 @@ async function updateSheet(sheets, row, result, isSheckles = false) {
     { range: `${SHEET_NAME}!B${row}`, values: [[result.price]] },
     { range: `${SHEET_NAME}!C${row}`, values: [[formula]] },
     { range: `${SHEET_NAME}!D${row}`, values: [[`=IF(B${row}="","",C${row}-B${row})`]] },
+    { range: `${SHEET_NAME}!G${row}`, values: [[sourceUrl]] },
   ];
 
   const minQtyDisplay = isSheckles ? `${result.minQty}M` : `${result.minQty}`;
@@ -159,7 +158,7 @@ async function run() {
       const result = await scrapeItem(page, item);
       if (result) {
         console.log(`✅ ${item.name}: $${result.price.toFixed(2)}, min qty: ${result.minQty}`);
-        await updateSheet(sheets, item.row, result);
+        await updateSheet(sheets, item.row, result, false, item.url + '1');
       } else {
         console.log(`❌ ${item.name}: no listings found`);
       }
@@ -168,7 +167,7 @@ async function run() {
     const sheckles = await scrapeSheckles(page);
     if (sheckles) {
       console.log(`✅ Sheckles: $${sheckles.price}/M, min qty: ${sheckles.minQty}M`);
-      await updateSheet(sheets, SHECKLES_ROW, sheckles, true);
+      await updateSheet(sheets, SHECKLES_ROW, sheckles, true, SHECKLES_URL);
     } else {
       console.log("❌ Sheckles: no eligible sellers found");
     }
