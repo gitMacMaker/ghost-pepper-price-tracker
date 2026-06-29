@@ -109,6 +109,12 @@ async function updateSheet(sheets, item, result) {
 async function run() {
   console.log(`[${new Date().toISOString()}] Starting seeds price check...`);
   const sheets = await getSheetClient();
+  await sheets.spreadsheets.values.update({
+  spreadsheetId: SPREADSHEET_ID,
+  range: `${SHEET_NAME}!G1`,
+  valueInputOption: "RAW",
+  requestBody: { values: [["Eldorado Link"]] },
+});
 
   const browser = await puppeteer.launch({
     headless: "new",
