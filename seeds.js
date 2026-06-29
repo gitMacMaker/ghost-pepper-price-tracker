@@ -83,11 +83,13 @@ function getFormula(row, name) {
 
 async function updateSheet(sheets, item, result) {
   const now = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
+  const listingUrl = item.url + '1';
 
   const priceData = [
     { range: `${SHEET_NAME}!B${item.row}`, values: [[result.price]] },
     { range: `${SHEET_NAME}!C${item.row}`, values: [[getFormula(item.row, item.name)]] },
     { range: `${SHEET_NAME}!D${item.row}`, values: [[`=IF(B${item.row}="","",C${item.row}-B${item.row})`]] },
+    { range: `${SHEET_NAME}!G${item.row}`, values: [[listingUrl]] },
   ];
   const rawData = [
     { range: `${SHEET_NAME}!E${item.row}`, values: [[`${result.minQty}`]] },
