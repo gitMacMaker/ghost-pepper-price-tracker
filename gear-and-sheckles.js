@@ -5,12 +5,12 @@ const SPREADSHEET_ID = "1124M88x32AuUN9TzmE_dr4ot6Rnt1Gu62VYPnBHXgxE";
 const SHEET_NAME = "Tracker";
 
 const GEAR = [
-  { name: "Super Watering Can",  row: 21, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20watering&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",     keyword: "super watering",    exclude: ["robux", "roll", "sprinkler", "not a", "mega"] },
-  { name: "Super Sprinkler",     row: 22, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "super sprinkler",   exclude: ["robux", "roll", "watering", "legendary", "not a", "mega"] },
-  { name: "Legendary Sprinkler", row: 23, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=legendary%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "legendary sprinkler", exclude: ["robux", "roll", "watering", "rare", "not a", "mega"] },
+  { name: "Super Watering Can",  row: 24, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20watering&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",     keyword: "super watering",    exclude: ["robux", "roll", "sprinkler", "not a", "mega"] },
+  { name: "Super Sprinkler",     row: 25, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=super%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=",    keyword: "super sprinkler",   exclude: ["robux", "roll", "watering", "legendary", "not a", "mega"] },
+  { name: "Legendary Sprinkler", row: 26, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=other&searchQuery=legendary%20sprinkler&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "legendary sprinkler", exclude: ["robux", "roll", "watering", "rare", "not a", "mega"] },
 ];
 
-const SHECKLES_ROW = 24;
+const SHECKLES_ROW = 27;
 const SHECKLES_URL = "https://www.eldorado.gg/grow-a-garden-2-sheckles/g/430?offerSortingCriterion=LowestMinQty";
 const MIN_LEGIT_PRICE = 0.05;
 
