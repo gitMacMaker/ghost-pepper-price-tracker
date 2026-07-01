@@ -15,6 +15,9 @@ const ITEMS = [
   { name: "Mushroom Seed",       row: 9,  url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Mushroom%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "mushroom", exclude: ["robux", "roll", "fruit", "not a"] },
   { name: "Pomegranate Seed",    row: 10, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&hotSearchQuery=Pomegranate%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "pomegranate", exclude: ["robux", "roll", "fruit", "not a"] },
   { name: "Hypno Bloom Seed",    row: 11, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?gag2-items-type=seeds&searchQuery=hypno%20bloom&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "hypno bloom", exclude: ["robux", "roll", "fruit", "not a"] },
+  { name: "Rainbow Seed",        row: 12, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?hotSearchQuery=Rainbow%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "rainbow seed", exclude: ["robux", "roll", "fruit", "not a", "mega"] },
+  { name: "Mega Seed",           row: 13, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?searchQuery=Mega%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "mega seed", exclude: ["robux", "roll", "fruit", "not a"] },
+  { name: "Gold Seed",           row: 14, url: "https://www.eldorado.gg/grow-a-garden-2-shop/i/430?searchQuery=Gold%20Seed&offerSortingCriterion=Price&isAscending=true&gamePageOfferSize=24&gamePageOfferIndex=", keyword: "gold seed", exclude: ["robux", "roll", "fruit", "not a"] },
 ];
 
 const MIN_LEGIT_PRICE = 0.01;
